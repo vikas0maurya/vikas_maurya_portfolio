@@ -10,58 +10,53 @@ const Contact = () => {
           <div className="contact-box">
             <h4>Email</h4>
             <p>
-              <a href="mailto:example@mail.com" data-cursor="disable">
-                example@mail.com
+              <a href="mailto:vikas707maurya@gmail.com" data-cursor="disable">
+                vikas707maurya@gmail.com
               </a>
             </p>
             <h4>Phone</h4>
             <p>
-              <a href="tel:+9199999999" data-cursor="disable">
-                +91 99999 99999
+              <a href="tel:+917522036304" data-cursor="disable">
+                +91-7522036304
               </a>
             </p>
+            <h4>Location</h4>
+            <p style={{ marginTop: "5px" }}>Gurugram, Haryana, India</p>
           </div>
           <div className="contact-box">
             <h4>Social</h4>
-            <a
-              href="https://github.com"
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Github <MdArrowOutward />
-            </a>
             <a
               href="https://www.linkedin.com"
               target="_blank"
               data-cursor="disable"
               className="contact-social"
+              rel="noreferrer"
             >
               Linkedin <MdArrowOutward />
-            </a>
-            <a
-              href="https://x.com"
-              target="_blank"
-              data-cursor="disable"
-              className="contact-social"
-            >
-              Twitter <MdArrowOutward />
             </a>
             <a
               href="https://www.instagram.com"
               target="_blank"
               data-cursor="disable"
               className="contact-social"
+              rel="noreferrer"
             >
               Instagram <MdArrowOutward />
+            </a>
+            <a
+              href="mailto:vikas707maurya@gmail.com?subject=Portfolio%20Inquiry"
+              data-cursor="disable"
+              className="contact-social"
+            >
+              Get In Touch <MdArrowOutward />
             </a>
           </div>
           <div className="contact-box">
             <h2>
-              Designed and Developed <br /> by <span>Moncy Yohannan</span>
+              Graphic Designer & Video Editor <br /> by <span>Vikas Maurya</span>
             </h2>
             <h5>
-              <MdCopyright /> 2024
+              <MdCopyright /> 2026 Vikas Kumar Maurya
             </h5>
           </div>
         </div>

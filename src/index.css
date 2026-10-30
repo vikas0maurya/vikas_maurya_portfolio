@@ -96,8 +96,12 @@ body {
   position: relative;
   height: var(--vh);
   margin: auto;
-  margin-top: 50px;
-  margin-bottom: -100px;
+  min-height: 700px;
+  margin: 0 auto;
+  background-color: var(--backgroundColor);
+  overflow: hidden;
+  z-index: 3;
+
 }
 
 .techstack h2 {
@@ -109,6 +113,16 @@ body {
   left: 0;
   font-weight: 400;
   text-transform: uppercase;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.tech-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0;
+  left: 0;
 }
 
 @media screen and (min-width: 768px) {

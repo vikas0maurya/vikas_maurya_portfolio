@@ -1,8 +1,8 @@
 import {
-  FaGithub,
+  FaEnvelope,
   FaInstagram,
   FaLinkedinIn,
-  FaXTwitter,
+  FaPhone,
 } from "react-icons/fa6";
 import "./styles/SocialIcons.css";
 import { TbNotes } from "react-icons/tb";
@@ -12,10 +12,12 @@ import HoverLinks from "./HoverLinks";
 const SocialIcons = () => {
   useEffect(() => {
     const social = document.getElementById("social") as HTMLElement;
+    if (!social) return;
 
     social.querySelectorAll("span").forEach((item) => {
       const elem = item as HTMLElement;
       const link = elem.querySelector("a") as HTMLElement;
+      if (!link) return;
 
       const rect = elem.getBoundingClientRect();
       let mouseX = rect.width / 2;
@@ -60,27 +62,46 @@ const SocialIcons = () => {
     <div className="icons-section">
       <div className="social-icons" data-cursor="icons" id="social">
         <span>
-          <a href="https://github.com" target="_blank">
-            <FaGithub />
-          </a>
-        </span>
-        <span>
-          <a href="https://www.linkedin.com" target="_blank">
+          <a
+            href="https://www.linkedin.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+          >
             <FaLinkedinIn />
           </a>
         </span>
         <span>
-          <a href="https://x.com" target="_blank">
-            <FaXTwitter />
-          </a>
-        </span>
-        <span>
-          <a href="https://www.instagram.com" target="_blank">
+          <a
+            href="https://www.instagram.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram"
+          >
             <FaInstagram />
           </a>
         </span>
+        <span>
+          <a
+            href="mailto:vikas707maurya@gmail.com"
+            aria-label="Email Vikas Maurya"
+          >
+            <FaEnvelope />
+          </a>
+        </span>
+        <span>
+          <a
+            href="tel:+917522036304"
+            aria-label="Call Vikas Maurya"
+          >
+            <FaPhone />
+          </a>
+        </span>
       </div>
-      <a className="resume-button" href="#">
+      <a
+        className="resume-button"
+        href="mailto:vikas707maurya@gmail.com?subject=Resume%20Request%20-%20Vikas%20Maurya"
+      >
         <HoverLinks text="RESUME" />
         <span>
           <TbNotes />

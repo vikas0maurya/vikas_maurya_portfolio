@@ -10,25 +10,88 @@ import {
   CylinderCollider,
   RapierRigidBody,
 } from "@react-three/rapier";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import gsap from "gsap";
 
-const textureLoader = new THREE.TextureLoader();
-const imageUrls = [
-  "/images/react2.webp",
-  "/images/next2.webp",
-  "/images/node2.webp",
-  "/images/express.webp",
-  "/images/mongo.webp",
-  "/images/mysql.webp",
-  "/images/typescript.webp",
-  "/images/javascript.webp",
-];
-const textures = imageUrls.map((url) => textureLoader.load(url));
+gsap.registerPlugin(ScrollTrigger);
 
 const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
 
-const spheres = [...Array(30)].map(() => ({
-  scale: [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
+const spheres = [...Array(24)].map(() => ({
+  scale: [0.8, 1, 0.9, 1.1][Math.floor(Math.random() * 4)],
 }));
+
+function drawRoundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function createToolTexture(
+  short: string,
+  name: string,
+  color: string,
+  bg: string
+): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const centers = [256, 768];
+  centers.forEach((cx) => {
+    const size = 180;
+    const x = cx - size / 2;
+    const y = 170 - size / 2;
+    const r = 28;
+
+    ctx.save();
+    ctx.fillStyle = bg;
+    drawRoundedRect(ctx, x, y, size, size, r);
+    ctx.fill();
+
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = color;
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.font = "bold 78px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(short, cx, 172);
+    ctx.restore();
+
+    ctx.fillStyle = "#111111";
+    ctx.font = "600 42px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(name, cx, 360);
+  });
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.needsUpdate = true;
+  return texture;
+}
 
 type SphereProps = {
   vec?: THREE.Vector3;
@@ -48,30 +111,31 @@ function SphereGeo({
   const api = useRef<RapierRigidBody | null>(null);
 
   useFrame((_state, delta) => {
-    if (!isActive) return;
+    if (!isActive || !api.current) return;
     delta = Math.min(0.1, delta);
     const impulse = vec
-      .copy(api.current!.translation())
+      .copy(api.current.translation())
       .normalize()
       .multiply(
         new THREE.Vector3(
-          -50 * delta * scale,
-          -150 * delta * scale,
-          -50 * delta * scale
+          -40 * delta * scale,
+          -120 * delta * scale,
+          -40 * delta * scale
         )
       );
 
-    api.current?.applyImpulse(impulse, true);
+    api.current.applyImpulse(impulse, true);
   });
 
   return (
     <RigidBody
-      linearDamping={0.75}
-      angularDamping={0.15}
-      friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
+      linearDamping={0.8}
+      angularDamping={0.8}
+      friction={0.3}
+      position={[r(18), r(15) - 20, r(15) - 8]}
       ref={api}
       colliders={false}
+      lockRotations={true}
     >
       <BallCollider args={[scale]} />
       <CylinderCollider
@@ -85,7 +149,7 @@ function SphereGeo({
         scale={scale}
         geometry={sphereGeometry}
         material={material}
-        rotation={[0.3, 1, 1]}
+        rotation={[0, 0, 0]}
       />
     </RigidBody>
   );
@@ -100,7 +164,7 @@ function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
   const ref = useRef<RapierRigidBody>(null);
 
   useFrame(({ pointer, viewport }) => {
-    if (!isActive) return;
+    if (!isActive || !ref.current) return;
     const targetVec = vec.lerp(
       new THREE.Vector3(
         (pointer.x * viewport.width) / 2,
@@ -109,7 +173,7 @@ function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
       ),
       0.2
     );
-    ref.current?.setNextKinematicTranslation(targetVec);
+    ref.current.setNextKinematicTranslation(targetVec);
   });
 
   return (
@@ -128,47 +192,53 @@ const TechStack = () => {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const threshold = document
-        .getElementById("work")!
-        .getBoundingClientRect().top;
-      setIsActive(scrollY > threshold);
-    };
-    document.querySelectorAll(".header a").forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
-      element.addEventListener("click", () => {
-        const interval = setInterval(() => {
-          handleScroll();
-        }, 10);
-        setTimeout(() => {
-          clearInterval(interval);
-        }, 1000);
-      });
+    const trigger = ScrollTrigger.create({
+      trigger: ".techstack",
+      start: "top 75%",
+      onEnter: () => setIsActive(true),
+      onLeaveBack: () => setIsActive(false),
     });
-    window.addEventListener("scroll", handleScroll);
+
+    ScrollTrigger.refresh();
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      trigger.kill();
     };
   }, []);
+
   const materials = useMemo(() => {
-    return textures.map(
-      (texture) =>
-        new THREE.MeshPhysicalMaterial({
-          map: texture,
-          emissive: "#ffffff",
-          emissiveMap: texture,
-          emissiveIntensity: 0.3,
-          metalness: 0.5,
-          roughness: 1,
-          clearcoat: 0.1,
-        })
-    );
+    const tools = [
+      { short: "Ps", name: "Photoshop", color: "#31a8ff", bg: "#001e36" },
+      { short: "Ai", name: "Illustrator", color: "#ff9a00", bg: "#330000" },
+      { short: "Pr", name: "Premiere Pro", color: "#ea77ff", bg: "#2a0033" },
+      { short: "Ae", name: "After Effects", color: "#9999ff", bg: "#1f0036" },
+      { short: "DR", name: "DaVinci", color: "#ff5555", bg: "#1a1a2e" },
+      { short: "Cv", name: "Canva", color: "#00c4cc", bg: "#002830" },
+      { short: "Cd", name: "CorelDraw", color: "#2ecc71", bg: "#0a2914" },
+    ];
+
+    return tools.map((tool) => {
+      const texture = createToolTexture(
+        tool.short,
+        tool.name,
+        tool.color,
+        tool.bg
+      );
+      return new THREE.MeshPhysicalMaterial({
+        map: texture,
+        emissive: "#ffffff",
+        emissiveMap: texture,
+        emissiveIntensity: 0.3,
+        metalness: 0.4,
+        roughness: 0.8,
+        clearcoat: 0.1,
+      });
+    });
   }, []);
 
   return (
     <div className="techstack">
-      <h2> My Techstack</h2>
+      <h2>Creative Tools</h2>
 
       <Canvas
         shadows
